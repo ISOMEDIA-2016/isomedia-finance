@@ -139,7 +139,75 @@
 
     <!-- Ma'lumotnoma -->
     <div x-show="page === 'db'" x-data="db()" x-init="init()">
-      <div class="flex justify-center py-16" x-show="loading"><div class="spinner"></div></div>
+      <div class="flex items-center justify-between mb-6">
+        <h1 class="text-2xl font-semibold">Ma'lumotnoma</h1>
+        <button @click="openAdd()" class="btn-primary" x-show="$root.canWrite()">+ Qo'shish</button>
+      </div>
+
+      <!-- Tabs -->
+      <div class="flex gap-2 mb-6 flex-wrap">
+        <template x-for="t in tabs" :key="t.id">
+          <button class="tab-btn" :class="{active: activeTab === t.id}"
+            @click="loadTab(t.id)" x-text="t.label"></button>
+        </template>
+      </div>
+
+      <!-- Error -->
+      <div x-show="error" class="text-ios-red text-sm mb-4" x-text="error"></div>
+
+      <!-- Loading -->
+      <div x-show="loading" class="flex justify-center py-10"><div class="spinner"></div></div>
+
+      <!-- Table -->
+      <div class="card overflow-hidden" x-show="!loading && data[activeTab]">
+        <div class="overflow-x-auto">
+          <table>
+            <thead>
+              <tr>
+                <template x-for="f in fieldsFor(activeTab)" :key="f">
+                  <th x-text="f"></th>
+                </template>
+                <th x-show="$root.canWrite()">Amal</th>
+              </tr>
+            </thead>
+            <tbody>
+              <template x-for="row in (data[activeTab] || [])" :key="row._rowId">
+                <tr>
+                  <template x-for="f in fieldsFor(activeTab)" :key="f">
+                    <td x-text="row[f]"></td>
+                  </template>
+                  <td x-show="$root.canWrite()">
+                    <button @click="openEdit(row)" class="text-ios-accent text-xs font-medium mr-3">Tahrirlash</button>
+                    <button @click="remove(row)" class="text-ios-red text-xs font-medium">O'chirish</button>
+                  </td>
+                </tr>
+              </template>
+              <tr x-show="(data[activeTab] || []).length === 0 && !loading">
+                <td :colspan="fieldsFor(activeTab).length + 1" class="text-center text-ios-gray py-8">Ma'lumot yo'q</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Modal Form -->
+      <div x-show="showForm" class="modal-overlay" @click.self="showForm=false">
+        <div class="modal">
+          <h3 class="text-lg font-semibold mb-5" x-text="editRowId ? 'Tahrirlash' : 'Yangi yozuv'"></h3>
+          <div class="space-y-4">
+            <template x-for="f in fieldsFor(activeTab)" :key="f">
+              <div>
+                <label class="block text-xs font-medium text-ios-gray mb-1" x-text="f"></label>
+                <input class="input-field" x-model="formData[f]" :placeholder="f"/>
+              </div>
+            </template>
+          </div>
+          <div class="flex gap-3 mt-6">
+            <button @click="save()" class="btn-primary flex-1">Saqlash</button>
+            <button @click="showForm=false" class="btn-secondary flex-1">Bekor</button>
+          </div>
+        </div>
+      </div>
     </div>
 
   </main>
