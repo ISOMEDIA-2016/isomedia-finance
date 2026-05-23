@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="uz" x-data="app()" x-init="init()">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ISOMEDIA — Moliya</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            ios: {
+              bg:      '#F2F2F7',
+              accent:  '#5856D6',
+              green:   '#34C759',
+              red:     '#FF3B30',
+              orange:  '#FF9500',
+              gray:    '#8E8E93',
+              dark:    '#1C1C1E'
+            }
+          },
+          fontFamily: { sans: ['Inter', 'sans-serif'] },
+          borderRadius: { xl: '16px', '2xl': '20px' }
+        }
+      }
+    }
+  </script>
+  <style>
+    body { font-family: 'Inter', sans-serif; background: #F2F2F7; color: #1C1C1E; }
+    .card { background: #fff; border-radius: 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
+    .sidebar-link { display:flex; align-items:center; gap:10px; padding:10px 16px; border-radius:10px; cursor:pointer; transition:background .15s; font-size:14px; font-weight:500; color:#1C1C1E; }
+    .sidebar-link:hover { background:#F2F2F7; }
+    .sidebar-link.active { background:#EEF0FF; color:#5856D6; }
+    .btn-primary { background:#5856D6; color:#fff; padding:8px 20px; border-radius:10px; font-size:14px; font-weight:500; cursor:pointer; border:none; transition:opacity .15s; }
+    .btn-primary:hover { opacity:0.9; }
+    .btn-secondary { background:#F2F2F7; color:#1C1C1E; padding:8px 20px; border-radius:10px; font-size:14px; font-weight:500; cursor:pointer; border:none; }
+    .btn-danger { background:#FF3B30; color:#fff; padding:6px 14px; border-radius:8px; font-size:13px; cursor:pointer; border:none; }
+    .input-field { width:100%; border:1.5px solid #E5E5EA; border-radius:10px; padding:9px 12px; font-size:14px; outline:none; transition:border-color .15s; font-family:'Inter',sans-serif; }
+    .input-field:focus { border-color:#5856D6; }
+    .tab-btn { padding:8px 18px; border-radius:8px; font-size:13px; font-weight:500; cursor:pointer; border:none; background:transparent; color:#8E8E93; transition:all .15s; }
+    .tab-btn.active { background:#5856D6; color:#fff; }
+    table { width:100%; border-collapse:collapse; font-size:13px; }
+    th { text-align:left; padding:10px 12px; color:#8E8E93; font-weight:500; border-bottom:1px solid #F2F2F7; font-size:12px; }
+    td { padding:10px 12px; border-bottom:1px solid #F2F2F7; }
+    tr:hover td { background:#FAFAFA; }
+    .badge { display:inline-block; padding:3px 10px; border-radius:20px; font-size:11px; font-weight:600; }
+    .badge-green { background:#E8FAF0; color:#34C759; }
+    .badge-red { background:#FEF0EF; color:#FF3B30; }
+    .badge-orange { background:#FFF4E6; color:#FF9500; }
+    .modal-overlay { position:fixed; inset:0; background:rgba(0,0,0,0.3); z-index:50; display:flex; align-items:center; justify-content:center; }
+    .modal { background:#fff; border-radius:20px; padding:28px; width:100%; max-width:520px; max-height:90vh; overflow-y:auto; }
+    .spinner { border:3px solid #E5E5EA; border-top-color:#5856D6; border-radius:50%; width:24px; height:24px; animation:spin .7s linear infinite; }
+    @keyframes spin { to { transform:rotate(360deg); } }
+    [x-cloak] { display: none !important; }
+  </style>
+</head>
+<body>
+
+<!-- ==================== LOGIN ==================== -->
+<div x-show="!user" class="min-h-screen flex items-center justify-center p-4">
+  <div class="card p-10 w-full max-w-sm">
+    <div class="flex justify-center mb-8">
+      <img src="assets/isomedia_black.png" alt="ISOMEDIA" class="h-8 object-contain"/>
+    </div>
+    <form @submit.prevent="login()" class="space-y-4">
+      <div>
+        <label class="block text-xs font-medium text-ios-gray mb-1">Foydalanuvchi nomi</label>
+        <input x-model="loginForm.username" type="text" class="input-field" placeholder="username" required/>
+      </div>
+      <div>
+        <label class="block text-xs font-medium text-ios-gray mb-1">Parol</label>
+        <input x-model="loginForm.password" type="password" class="input-field" placeholder="••••••••" required/>
+      </div>
+      <div x-show="loginError" class="text-sm text-ios-red" x-text="loginError"></div>
+      <button type="submit" class="btn-primary w-full mt-2">Kirish</button>
+    </form>
+  </div>
+</div>
+
+<!-- ==================== APP SHELL ==================== -->
+<div x-show="user" class="flex min-h-screen">
+
+  <!-- Sidebar -->
+  <aside class="w-60 bg-white flex flex-col py-6 px-4 gap-1 shadow-sm flex-shrink-0">
+    <div class="px-3 mb-6">
+      <img src="assets/isomedia_black.png" alt="ISOMEDIA" class="h-7 object-contain"/>
+    </div>
+
+    <template x-for="item in navItems()" :key="item.id">
+      <div
+        class="sidebar-link"
+        :class="{ active: page === item.id }"
+        @click="navigate(item.id)">
+        <span class="text-base" x-text="navIcon(item.icon)"></span>
+        <span x-text="item.label"></span>
+      </div>
+    </template>
+
+    <div class="flex-1"></div>
+
+    <div class="px-3 py-3 rounded-xl bg-ios-bg">
+      <div class="text-xs font-medium text-ios-dark" x-text="user && user.username"></div>
+      <div class="text-xs text-ios-gray capitalize" x-text="user && user.role"></div>
+      <button @click="logout()" class="text-xs text-ios-red mt-2 font-medium">Chiqish</button>
+    </div>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="flex-1 overflow-auto p-6">
+
+    <!-- Dashboard -->
+    <div x-show="page === 'dashboard'" x-data="dashboard()" x-init="init()">
+      <div class="flex justify-center py-16" x-show="loading"><div class="spinner"></div></div>
+    </div>
+
+    <!-- Kassa -->
+    <div x-show="page === 'kassa'" x-data="kassa()" x-init="init()">
+      <div class="flex justify-center py-16" x-show="loading"><div class="spinner"></div></div>
+    </div>
+
+    <!-- Zakaz -->
+    <div x-show="page === 'zakaz'" x-data="zakaz()" x-init="init()">
+      <div class="flex justify-center py-16" x-show="loading"><div class="spinner"></div></div>
+    </div>
+
+    <!-- Maosh -->
+    <div x-show="page === 'maosh'" x-data="maosh()" x-init="init()">
+      <div class="flex justify-center py-16" x-show="loading"><div class="spinner"></div></div>
+    </div>
+
+    <!-- Hisobot -->
+    <div x-show="page === 'hisobot'" x-data="hisobot()" x-init="init()">
+      <div class="flex justify-center py-16" x-show="loading"><div class="spinner"></div></div>
+    </div>
+
+    <!-- Ma'lumotnoma -->
+    <div x-show="page === 'db'" x-data="db()" x-init="init()">
+      <div class="flex justify-center py-16" x-show="loading"><div class="spinner"></div></div>
+    </div>
+
+  </main>
+</div>
+
+<!-- ==================== SCRIPTS ==================== -->
+<script src="config.js"></script>
+<script src="api.js"></script>
+<script src="pages/dashboard.js"></script>
+<script src="pages/kassa.js"></script>
+<script src="pages/zakaz.js"></script>
+<script src="pages/maosh.js"></script>
+<script src="pages/hisobot.js"></script>
+<script src="pages/db.js"></script>
+<script src="app.js"></script>
+<script>
+  function navIcon(name) {
+    const icons = {
+      home: '🏠', wallet: '💳', list: '📋',
+      users: '👥', chart: '📊', db: '🗂️'
+    };
+    return icons[name] || '•';
+  }
+</script>
+<script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3/dist/cdn.min.js"></script>
+</body>
+</html>
