@@ -119,7 +119,177 @@
 
     <!-- Kassa -->
     <div x-show="page === 'kassa'" x-data="kassa()" x-init="init()">
-      <div class="flex justify-center py-16" x-show="loading"><div class="spinner"></div></div>
+      <div class="flex items-center justify-between mb-6">
+        <h1 class="text-2xl font-semibold">Kassa</h1>
+        <div class="flex gap-2" x-show="$root.canWrite()">
+          <button @click="openForm('Kirim')" class="btn-primary">+ Kirim</button>
+          <button @click="openForm('Chiqim')" style="background:#FF3B30" class="btn-primary">+ Chiqim</button>
+        </div>
+      </div>
+
+      <!-- Tabs -->
+      <div class="flex gap-2 mb-6">
+        <button class="tab-btn" :class="{active: activeTab==='operatsiyalar'}" @click="activeTab='operatsiyalar'">Operatsiyalar</button>
+        <button class="tab-btn" :class="{active: activeTab==='hamyon'}" @click="activeTab='hamyon'">Hamyon qoldiqlari</button>
+      </div>
+
+      <div x-show="error" class="text-ios-red text-sm mb-4" x-text="error"></div>
+      <div x-show="loading" class="flex justify-center py-10"><div class="spinner"></div></div>
+
+      <!-- Operatsiyalar Tab -->
+      <div x-show="activeTab === 'operatsiyalar'" x-cloak>
+        <div class="card p-4 mb-4 flex flex-wrap gap-3 items-end">
+          <div>
+            <label class="text-xs text-ios-gray block mb-1">Dan</label>
+            <input type="date" x-model="dateFrom" class="input-field w-36"/>
+          </div>
+          <div>
+            <label class="text-xs text-ios-gray block mb-1">Gacha</label>
+            <input type="date" x-model="dateTo" class="input-field w-36"/>
+          </div>
+          <div>
+            <label class="text-xs text-ios-gray block mb-1">Hamyon</label>
+            <select x-model="filterHamyon" class="input-field w-44">
+              <option value="">Barchasi</option>
+              <template x-for="h in hamyonlar" :key="h.Nomi">
+                <option :value="h.Nomi" x-text="h.Nomi"></option>
+              </template>
+            </select>
+          </div>
+          <div>
+            <label class="text-xs text-ios-gray block mb-1">Turi</label>
+            <select x-model="filterTuri" class="input-field w-36">
+              <option value="">Barchasi</option>
+              <option value="Kirim">Kirim</option>
+              <option value="Chiqim">Chiqim</option>
+            </select>
+          </div>
+          <button @click="applyFilter()" class="btn-primary">Filtrlash</button>
+        </div>
+
+        <div class="card overflow-hidden">
+          <div class="overflow-x-auto">
+            <table>
+              <thead>
+                <tr>
+                  <th>Sana</th><th>Turi</th><th>Summa</th><th>Valyuta</th>
+                  <th>Kurs</th><th>Hamyon</th><th>Manbalar</th><th>Izoh</th>
+                  <th x-show="$root.canWrite()">Amal</th>
+                </tr>
+              </thead>
+              <tbody>
+                <template x-for="op in operations" :key="op._rowId">
+                  <tr>
+                    <td x-text="op['Sana']"></td>
+                    <td>
+                      <span class="badge" :class="op['Turi']==='Kirim' ? 'badge-green' : 'badge-red'" x-text="op['Turi']"></span>
+                    </td>
+                    <td class="font-semibold" :class="op['Turi']==='Kirim' ? 'text-ios-green' : 'text-ios-red'" x-text="fmt(op['Summa'])"></td>
+                    <td x-text="op['Valyuta']"></td>
+                    <td x-text="op['Kurs']"></td>
+                    <td x-text="op['Hamyon']"></td>
+                    <td x-text="op['Manbalar']"></td>
+                    <td x-text="op['Izoh']"></td>
+                    <td x-show="$root.canWrite()">
+                      <button @click="remove(op)" class="text-ios-red text-xs">O'chirish</button>
+                    </td>
+                  </tr>
+                </template>
+                <tr x-show="operations.length === 0 && !loading">
+                  <td colspan="9" class="text-center text-ios-gray py-8">Ma'lumot yo'q</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Hamyon qoldiqlari Tab -->
+      <div x-show="activeTab === 'hamyon'" x-cloak>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          <template x-for="(bal, name) in balances" :key="name">
+            <div class="card p-5">
+              <div class="text-sm text-ios-gray mb-1" x-text="name"></div>
+              <div class="text-2xl font-bold" :class="bal >= 0 ? 'text-ios-dark' : 'text-ios-red'" x-text="fmt(bal)"></div>
+            </div>
+          </template>
+        </div>
+      </div>
+
+      <!-- Form Modal -->
+      <div x-show="showForm" class="modal-overlay" @click.self="showForm=false">
+        <div class="modal">
+          <h3 class="text-lg font-semibold mb-5"
+              :class="formType==='Kirim' ? 'text-ios-green' : 'text-ios-red'"
+              x-text="formType + ' qo\'shish'"></h3>
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <label class="text-xs text-ios-gray mb-1 block">Sana *</label>
+              <input type="date" x-model="formData.Sana" class="input-field"/>
+            </div>
+            <div>
+              <label class="text-xs text-ios-gray mb-1 block">Summa *</label>
+              <input type="number" x-model="formData.Summa" class="input-field" placeholder="0"/>
+            </div>
+            <div>
+              <label class="text-xs text-ios-gray mb-1 block">Valyuta</label>
+              <select x-model="formData.Valyuta" class="input-field">
+                <option>So'm</option>
+                <option>Dollar</option>
+              </select>
+            </div>
+            <div>
+              <label class="text-xs text-ios-gray mb-1 block">Kurs</label>
+              <input type="number" x-model="formData.Kurs" class="input-field" placeholder="12000"/>
+            </div>
+            <div>
+              <label class="text-xs text-ios-gray mb-1 block">Hamyon *</label>
+              <select x-model="formData.Hamyon" class="input-field">
+                <option value="">Tanlang</option>
+                <template x-for="h in hamyonlar" :key="h.Nomi">
+                  <option :value="h.Nomi" x-text="h.Nomi"></option>
+                </template>
+              </select>
+            </div>
+            <div>
+              <label class="text-xs text-ios-gray mb-1 block">Manbalar *</label>
+              <select x-model="formData.Manbalar" class="input-field">
+                <option value="">Tanlang</option>
+                <template x-for="m in filteredManbalar()" :key="m.Nomi">
+                  <option :value="m.Nomi" x-text="m.Nomi"></option>
+                </template>
+              </select>
+            </div>
+            <div>
+              <label class="text-xs text-ios-gray mb-1 block">Yo'nalish</label>
+              <select x-model="formData.Yonalish" class="input-field">
+                <option value="">—</option>
+                <template x-for="y in yonalishlar" :key="y.Nomi">
+                  <option :value="y.Nomi" x-text="y.Nomi"></option>
+                </template>
+              </select>
+            </div>
+            <div>
+              <label class="text-xs text-ios-gray mb-1 block">Xodim</label>
+              <select x-model="formData.Xodim" class="input-field">
+                <option value="">—</option>
+                <template x-for="x in xodimlar" :key="x.Nomi">
+                  <option :value="x.Nomi" x-text="x.Nomi"></option>
+                </template>
+              </select>
+            </div>
+            <div class="col-span-2">
+              <label class="text-xs text-ios-gray mb-1 block">Izoh</label>
+              <input x-model="formData.Izoh" class="input-field" placeholder="Izoh..."/>
+            </div>
+          </div>
+          <div x-show="error" class="text-ios-red text-xs mt-3" x-text="error"></div>
+          <div class="flex gap-3 mt-6">
+            <button @click="save()" class="btn-primary flex-1">Saqlash</button>
+            <button @click="showForm=false" class="btn-secondary flex-1">Bekor</button>
+          </div>
+        </div>
+      </div>
     </div>
 
     <!-- Zakaz -->
