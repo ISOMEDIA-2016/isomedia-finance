@@ -114,7 +114,122 @@
 
     <!-- Dashboard -->
     <div x-show="page === 'dashboard'" x-data="dashboard()" x-init="init()">
-      <div class="flex justify-center py-16" x-show="loading"><div class="spinner"></div></div>
+      <div class="flex items-center justify-between mb-6">
+        <h1 class="text-2xl font-semibold">Dashboard</h1>
+        <span class="text-sm text-ios-gray"
+              x-text="new Date().toLocaleDateString('uz-UZ', {month:'long', year:'numeric', day:'numeric'})"></span>
+      </div>
+
+      <div x-show="error" class="text-ios-red text-sm mb-4" x-text="error"></div>
+      <div x-show="loading" class="flex justify-center py-16"><div class="spinner"></div></div>
+
+      <div x-show="!loading">
+        <!-- KPI Cards -->
+        <div class="grid grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+          <!-- Total balance -->
+          <div class="card p-5">
+            <div class="text-xs text-ios-gray mb-1">Umumiy qoldiq</div>
+            <div class="text-2xl font-bold"
+                 :class="kpi.totalBalance >= 0 ? '' : 'text-ios-red'"
+                 x-text="fmt(kpi.totalBalance)"></div>
+          </div>
+          <!-- Monthly income vs plan -->
+          <div class="card p-5">
+            <div class="text-xs text-ios-gray mb-1">Oylik daromad</div>
+            <div class="text-2xl font-bold text-ios-green" x-text="fmt(kpi.monthIncome)"></div>
+            <div class="text-xs text-ios-gray mt-1" x-show="kpi.monthPlan > 0">
+              Plan: <span x-text="fmt(kpi.monthPlan)"></span>
+              <span class="ml-1 font-semibold"
+                    :class="planPercent() >= 100 ? 'text-ios-green' : 'text-ios-orange'"
+                    x-text="planPercent() + '%'"></span>
+            </div>
+          </div>
+          <!-- Profit -->
+          <div class="card p-5">
+            <div class="text-xs text-ios-gray mb-1">Oylik foyda</div>
+            <div class="text-2xl font-bold"
+                 :class="kpi.monthProfit >= 0 ? 'text-ios-green' : 'text-ios-red'"
+                 x-text="fmt(kpi.monthProfit)"></div>
+          </div>
+          <!-- DDS -->
+          <div class="card p-5">
+            <div class="text-xs text-ios-gray mb-2">DDS (joriy oy)</div>
+            <div class="text-sm text-ios-gray">
+              Ochilish: <span class="font-medium text-ios-dark" x-text="fmt(kpi.ddsOpen)"></span>
+            </div>
+            <div class="text-sm text-ios-gray mt-1">
+              Yopilish: <span class="font-bold text-ios-dark" x-text="fmt(kpi.ddsClose)"></span>
+            </div>
+          </div>
+          <!-- Debtors -->
+          <div class="card p-5">
+            <div class="text-xs text-ios-gray mb-1">Debitorlik</div>
+            <div class="text-2xl font-bold text-ios-orange" x-text="'$' + fmt(kpi.debtors)"></div>
+            <div class="text-xs text-ios-gray mt-1">To'lanmagan zakazlar</div>
+          </div>
+          <!-- Fixed expenses -->
+          <div class="card p-5">
+            <div class="text-xs text-ios-gray mb-1">Doimiy xarajatlar</div>
+            <div class="text-2xl font-bold text-ios-red" x-text="fmt(kpi.doimiy)"></div>
+            <div class="text-xs text-ios-gray mt-1">Bu oy</div>
+          </div>
+        </div>
+
+        <!-- Charts -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-6">
+          <div class="card p-5">
+            <div class="text-sm font-semibold mb-4">Kunlik daromad (joriy oy)</div>
+            <canvas id="dailyChart" height="160"></canvas>
+            <div x-show="dailyData.length === 0" class="text-center text-ios-gray py-4 text-sm">
+              Bu oy uchun daromad ma'lumoti yo'q
+            </div>
+          </div>
+          <div class="card p-5">
+            <div class="text-sm font-semibold mb-4">Top 5 xarajat</div>
+            <canvas id="expChart" height="160"></canvas>
+            <div x-show="expenseData.length === 0" class="text-center text-ios-gray py-4 text-sm">
+              Bu oy uchun xarajat ma'lumoti yo'q
+            </div>
+          </div>
+        </div>
+
+        <!-- Recent operations -->
+        <div class="card overflow-hidden">
+          <div class="px-5 py-4 border-b border-gray-100">
+            <span class="text-sm font-semibold">So'nggi 10 operatsiya</span>
+          </div>
+          <div class="overflow-x-auto">
+            <table>
+              <thead>
+                <tr>
+                  <th>Sana</th><th>Turi</th><th>Summa</th><th>Hamyon</th><th>Manbalar</th><th>Izoh</th>
+                </tr>
+              </thead>
+              <tbody>
+                <template x-for="op in recentOps" :key="op._rowId">
+                  <tr>
+                    <td x-text="op.Sana"></td>
+                    <td>
+                      <span class="badge"
+                            :class="op.Turi === 'Kirim' ? 'badge-green' : 'badge-red'"
+                            x-text="op.Turi"></span>
+                    </td>
+                    <td class="font-semibold"
+                        :class="op.Turi === 'Kirim' ? 'text-ios-green' : 'text-ios-red'"
+                        x-text="fmt(op.Summa)"></td>
+                    <td x-text="op.Hamyon"></td>
+                    <td x-text="op.Manbalar"></td>
+                    <td class="text-ios-gray" x-text="op.Izoh"></td>
+                  </tr>
+                </template>
+                <tr x-show="recentOps.length === 0 && !loading">
+                  <td colspan="6" class="text-center text-ios-gray py-8">Ma'lumot yo'q</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
     </div>
 
     <!-- Kassa -->
