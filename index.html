@@ -31,68 +31,70 @@
   </script>
   <style>
     * { box-sizing: border-box; }
-    body { font-family: 'Inter', sans-serif; background: #F1F5F9; color: #0F172A; }
+    body { font-family: 'Inter', sans-serif; background: #F5F5F0; color: #2D2D2D; line-height: 1.6; }
 
     /* ── Sidebar ── */
-    .sidebar { background: #0F172A; }
-    .sidebar-link { display:flex; align-items:center; gap:10px; padding:9px 14px; border-radius:10px; cursor:pointer; transition:all .15s; font-size:13.5px; font-weight:500; color:#64748B; }
-    .sidebar-link svg { flex-shrink:0; }
-    .sidebar-link:hover { background:rgba(255,255,255,0.06); color:#CBD5E1; }
-    .sidebar-link.active { background:rgba(99,102,241,0.18); color:#A5B4FC; }
-    .sidebar-link.active svg { color:#818CF8; }
+    .sidebar { background: #22212E; }
+    .sidebar-link { display:flex; align-items:center; gap:11px; padding:10px 16px; border-radius:12px; cursor:pointer; transition:all .2s; font-size:13.5px; font-weight:400; color:#7C7A96; letter-spacing:0.01em; }
+    .sidebar-link svg { flex-shrink:0; opacity:0.7; }
+    .sidebar-link:hover { background:rgba(255,255,255,0.05); color:#C2C0D8; }
+    .sidebar-link:hover svg { opacity:1; }
+    .sidebar-link.active { background:rgba(167,161,219,0.14); color:#C4BFEE; font-weight:500; }
+    .sidebar-link.active svg { opacity:1; color:#B0AADF; }
 
     /* ── Cards ── */
-    .card { background:#fff; border-radius:16px; box-shadow:0 1px 2px rgba(0,0,0,0.04), 0 4px 20px rgba(0,0,0,0.06); }
-    .kpi-card { background:#fff; border-radius:16px; box-shadow:0 1px 2px rgba(0,0,0,0.04), 0 4px 20px rgba(0,0,0,0.06); padding:20px; position:relative; overflow:hidden; }
-    .kpi-card::before { content:''; position:absolute; top:0; left:0; right:0; height:3px; }
-    .kpi-card.accent::before { background: linear-gradient(90deg,#6366F1,#8B5CF6); }
-    .kpi-card.green::before  { background: linear-gradient(90deg,#22C55E,#16A34A); }
-    .kpi-card.blue::before   { background: linear-gradient(90deg,#3B82F6,#6366F1); }
-    .kpi-card.orange::before { background: linear-gradient(90deg,#F59E0B,#EF4444); }
-    .kpi-card.red::before    { background: linear-gradient(90deg,#EF4444,#F43F5E); }
-    .kpi-card.slate::before  { background: linear-gradient(90deg,#64748B,#475569); }
+    .card { background:#FEFEFE; border-radius:18px; box-shadow:0 1px 3px rgba(0,0,0,0.05); border:1px solid rgba(0,0,0,0.05); }
+    .kpi-card { background:#FEFEFE; border-radius:18px; padding:24px; border:1px solid rgba(0,0,0,0.05); box-shadow:0 1px 3px rgba(0,0,0,0.04); }
+    .kpi-dot { width:8px; height:8px; border-radius:50%; display:inline-block; margin-right:8px; flex-shrink:0; }
+    .kpi-dot.violet { background:#A79BE0; }
+    .kpi-dot.sage   { background:#7BB38A; }
+    .kpi-dot.sky    { background:#7AAED4; }
+    .kpi-dot.warm   { background:#D4A574; }
+    .kpi-dot.rose   { background:#C98585; }
+    .kpi-dot.muted  { background:#A0A0A0; }
 
     /* ── Buttons ── */
-    .btn-primary { background:#5856D6; color:#fff; padding:8px 18px; border-radius:10px; font-size:13.5px; font-weight:500; cursor:pointer; border:none; transition:all .15s; box-shadow:0 1px 3px rgba(88,86,214,0.35); }
-    .btn-primary:hover { background:#4845C0; }
-    .btn-secondary { background:#F1F5F9; color:#475569; padding:8px 18px; border-radius:10px; font-size:13.5px; font-weight:500; cursor:pointer; border:1.5px solid #E2E8F0; transition:all .15s; }
-    .btn-secondary:hover { background:#E2E8F0; }
-    .btn-danger { background:#EF4444; color:#fff; padding:6px 14px; border-radius:8px; font-size:13px; cursor:pointer; border:none; }
+    .btn-primary { background:#7B74D4; color:#fff; padding:9px 20px; border-radius:12px; font-size:13.5px; font-weight:500; cursor:pointer; border:none; transition:all .2s; letter-spacing:0.01em; }
+    .btn-primary:hover { background:#6E67C2; }
+    .btn-secondary { background:#F0EFF7; color:#5C5A7A; padding:9px 20px; border-radius:12px; font-size:13.5px; font-weight:500; cursor:pointer; border:1px solid #E4E2F0; transition:all .2s; }
+    .btn-secondary:hover { background:#E8E6F4; }
+    .btn-danger { background:#C98585; color:#fff; padding:7px 16px; border-radius:10px; font-size:13px; cursor:pointer; border:none; transition:all .2s; }
+    .btn-danger:hover { background:#B87777; }
 
     /* ── Inputs ── */
-    .input-field { width:100%; border:1.5px solid #E2E8F0; border-radius:10px; padding:9px 12px; font-size:14px; outline:none; transition:border-color .15s; font-family:'Inter',sans-serif; background:#fff; color:#0F172A; }
-    .input-field:focus { border-color:#6366F1; box-shadow:0 0 0 3px rgba(99,102,241,0.1); }
+    .input-field { width:100%; border:1px solid #E4E2EC; border-radius:12px; padding:10px 14px; font-size:14px; outline:none; transition:all .2s; font-family:'Inter',sans-serif; background:#FEFEFE; color:#2D2D2D; }
+    .input-field:focus { border-color:#A79BE0; box-shadow:0 0 0 3px rgba(167,155,224,0.12); }
 
     /* ── Tabs ── */
-    .tab-btn { padding:7px 16px; border-radius:8px; font-size:13px; font-weight:500; cursor:pointer; border:none; background:transparent; color:#94A3B8; transition:all .15s; }
-    .tab-btn:hover { color:#475569; background:#F1F5F9; }
-    .tab-btn.active { background:#5856D6; color:#fff; box-shadow:0 1px 4px rgba(88,86,214,0.35); }
+    .tab-btn { padding:8px 18px; border-radius:10px; font-size:13px; font-weight:400; cursor:pointer; border:none; background:transparent; color:#9E9CB8; transition:all .2s; }
+    .tab-btn:hover { color:#5C5A7A; background:#EEECF8; }
+    .tab-btn.active { background:#7B74D4; color:#fff; font-weight:500; }
 
     /* ── Tables ── */
-    table { width:100%; border-collapse:collapse; font-size:13px; }
-    th { text-align:left; padding:10px 14px; color:#94A3B8; font-weight:600; font-size:11px; text-transform:uppercase; letter-spacing:0.05em; border-bottom:1.5px solid #F1F5F9; }
-    td { padding:11px 14px; border-bottom:1px solid #F8FAFC; color:#334155; }
+    table { width:100%; border-collapse:collapse; font-size:13.5px; }
+    th { text-align:left; padding:12px 16px; color:#B0AECA; font-weight:500; font-size:11.5px; text-transform:uppercase; letter-spacing:0.06em; border-bottom:1px solid #F0EFF7; }
+    td { padding:13px 16px; border-bottom:1px solid #F7F6FC; color:#4A4865; }
     tr:last-child td { border-bottom:none; }
-    tr:hover td { background:#F8FAFC; }
+    tr:hover td { background:#FAFAF8; }
 
     /* ── Badges ── */
-    .badge { display:inline-flex; align-items:center; padding:3px 10px; border-radius:20px; font-size:11px; font-weight:600; letter-spacing:0.02em; }
-    .badge-green  { background:#DCFCE7; color:#16A34A; }
-    .badge-red    { background:#FEE2E2; color:#DC2626; }
-    .badge-orange { background:#FEF3C7; color:#D97706; }
-    .badge-blue   { background:#DBEAFE; color:#2563EB; }
+    .badge { display:inline-flex; align-items:center; padding:3px 11px; border-radius:20px; font-size:11.5px; font-weight:500; }
+    .badge-green  { background:#EBF5EE; color:#5E9E72; }
+    .badge-red    { background:#F5EBEB; color:#B06060; }
+    .badge-orange { background:#F5F0E8; color:#B08040; }
+    .badge-blue   { background:#EBF0F5; color:#5580A0; }
 
     /* ── Modal ── */
-    .modal-overlay { position:fixed; inset:0; background:rgba(15,23,42,0.5); backdrop-filter:blur(4px); z-index:50; display:flex; align-items:center; justify-content:center; padding:16px; }
-    .modal { background:#fff; border-radius:20px; padding:28px; width:100%; max-width:540px; max-height:90vh; overflow-y:auto; box-shadow:0 20px 60px rgba(0,0,0,0.2); }
+    .modal-overlay { position:fixed; inset:0; background:rgba(34,33,46,0.45); backdrop-filter:blur(6px); z-index:50; display:flex; align-items:center; justify-content:center; padding:20px; }
+    .modal { background:#FEFEFE; border-radius:22px; padding:32px; width:100%; max-width:540px; max-height:90vh; overflow-y:auto; box-shadow:0 24px 60px rgba(0,0,0,0.12); border:1px solid rgba(0,0,0,0.06); }
 
     /* ── Spinner ── */
-    .spinner { border:2.5px solid #E2E8F0; border-top-color:#5856D6; border-radius:50%; width:24px; height:24px; animation:spin .7s linear infinite; }
+    .spinner { border:2px solid #E8E6F4; border-top-color:#7B74D4; border-radius:50%; width:24px; height:24px; animation:spin .8s linear infinite; }
     @keyframes spin { to { transform:rotate(360deg); } }
 
     /* ── Login ── */
-    .login-bg { background: linear-gradient(135deg, #0F172A 0%, #1E293B 60%, #1E1B4B 100%); }
-    .login-card { background:rgba(255,255,255,0.97); backdrop-filter:blur(20px); border-radius:24px; box-shadow:0 25px 60px rgba(0,0,0,0.35); }
+    .login-bg { background: #22212E; background-image: radial-gradient(ellipse at 30% 20%, rgba(120,110,200,0.2) 0%, transparent 60%), radial-gradient(ellipse at 75% 80%, rgba(90,140,130,0.15) 0%, transparent 55%); }
+    .login-card { background:#FEFEFE; border-radius:24px; box-shadow:0 32px 80px rgba(0,0,0,0.25); border:1px solid rgba(255,255,255,0.1); }
 
     [x-cloak] { display: none !important; }
   </style>
@@ -158,7 +160,7 @@
   </aside>
 
   <!-- Main Content -->
-  <main class="flex-1 overflow-auto p-6 bg-slate-50">
+  <main class="flex-1 overflow-auto p-8" style="background:#F5F5F0">
 
     <!-- Dashboard -->
     <div x-show="page === 'dashboard'" x-data="dashboard()" x-init="init()">
@@ -175,58 +177,59 @@
         <!-- KPI Cards -->
         <div class="grid grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
           <!-- Total balance -->
-          <div class="kpi-card accent">
-            <div class="text-xs font-semibold text-slate-400 uppercase tracking-wide mb-2">Umumiy qoldiq</div>
-            <div class="text-2xl font-bold"
-                 :class="kpi.totalBalance >= 0 ? 'text-slate-800' : 'text-red-500'"
+          <div class="kpi-card">
+            <div class="flex items-center mb-3"><span class="kpi-dot violet"></span><span style="font-size:11px;font-weight:500;color:#B0AECA;text-transform:uppercase;letter-spacing:.06em">Umumiy qoldiq</span></div>
+            <div class="text-2xl font-semibold" style="letter-spacing:-0.02em"
+                 :class="kpi.totalBalance >= 0 ? 'text-stone-700' : 'text-rose-400'"
                  x-text="'$' + fmt(kpi.totalBalance)"></div>
-            <div class="text-xs text-slate-400 mt-1">Barcha hamyonlar</div>
+            <div style="font-size:12px;color:#B0AECA;margin-top:6px">Barcha hamyonlar</div>
           </div>
           <!-- Monthly income vs plan -->
-          <div class="kpi-card green">
-            <div class="text-xs font-semibold text-slate-400 uppercase tracking-wide mb-2">Oylik daromad</div>
-            <div class="text-2xl font-bold text-emerald-600" x-text="'$' + fmt(kpi.monthIncome)"></div>
-            <div class="text-xs text-slate-400 mt-1" x-show="kpi.monthPlan > 0">
-              Plan: <span class="font-medium text-slate-600" x-text="'$' + fmt(kpi.monthPlan)"></span>
-              <span class="ml-1 font-bold"
-                    :class="planPercent() >= 100 ? 'text-emerald-500' : 'text-amber-500'"
+          <div class="kpi-card">
+            <div class="flex items-center mb-3"><span class="kpi-dot sage"></span><span style="font-size:11px;font-weight:500;color:#B0AECA;text-transform:uppercase;letter-spacing:.06em">Oylik daromad</span></div>
+            <div class="text-2xl font-semibold" style="color:#5E9E72;letter-spacing:-0.02em" x-text="'$' + fmt(kpi.monthIncome)"></div>
+            <div style="font-size:12px;color:#B0AECA;margin-top:6px" x-show="kpi.monthPlan > 0">
+              Plan: <span style="color:#6B6988" x-text="'$' + fmt(kpi.monthPlan)"></span>
+              <span class="ml-1 font-medium"
+                    :class="planPercent() >= 100 ? '' : ''"
+                    :style="planPercent() >= 100 ? 'color:#5E9E72' : 'color:#C4915A'"
                     x-text="planPercent() + '%'"></span>
             </div>
-            <div class="text-xs text-slate-400 mt-1" x-show="!kpi.monthPlan">Bu oy</div>
+            <div style="font-size:12px;color:#B0AECA;margin-top:6px" x-show="!kpi.monthPlan">Bu oy</div>
           </div>
           <!-- Profit -->
-          <div class="kpi-card blue">
-            <div class="text-xs font-semibold text-slate-400 uppercase tracking-wide mb-2">Oylik foyda</div>
-            <div class="text-2xl font-bold"
-                 :class="kpi.monthProfit >= 0 ? 'text-blue-600' : 'text-red-500'"
+          <div class="kpi-card">
+            <div class="flex items-center mb-3"><span class="kpi-dot sky"></span><span style="font-size:11px;font-weight:500;color:#B0AECA;text-transform:uppercase;letter-spacing:.06em">Oylik foyda</span></div>
+            <div class="text-2xl font-semibold" style="letter-spacing:-0.02em"
+                 :style="kpi.monthProfit >= 0 ? 'color:#5580A0' : 'color:#C98585'"
                  x-text="'$' + fmt(kpi.monthProfit)"></div>
-            <div class="text-xs text-slate-400 mt-1">Daromad − xarajat</div>
+            <div style="font-size:12px;color:#B0AECA;margin-top:6px">Daromad − xarajat</div>
           </div>
           <!-- DDS -->
-          <div class="kpi-card slate">
-            <div class="text-xs font-semibold text-slate-400 uppercase tracking-wide mb-2">DDS (joriy oy)</div>
-            <div class="flex flex-col gap-1 mt-1">
-              <div class="flex justify-between text-sm">
-                <span class="text-slate-400">Ochilish</span>
-                <span class="font-semibold text-slate-700" x-text="'$' + fmt(kpi.ddsOpen)"></span>
+          <div class="kpi-card">
+            <div class="flex items-center mb-3"><span class="kpi-dot muted"></span><span style="font-size:11px;font-weight:500;color:#B0AECA;text-transform:uppercase;letter-spacing:.06em">DDS (joriy oy)</span></div>
+            <div class="flex flex-col gap-2 mt-1">
+              <div class="flex justify-between" style="font-size:13px">
+                <span style="color:#B0AECA">Ochilish</span>
+                <span style="font-weight:500;color:#6B6988" x-text="'$' + fmt(kpi.ddsOpen)"></span>
               </div>
-              <div class="flex justify-between text-sm">
-                <span class="text-slate-400">Yopilish</span>
-                <span class="font-bold text-slate-800" x-text="'$' + fmt(kpi.ddsClose)"></span>
+              <div class="flex justify-between" style="font-size:13px">
+                <span style="color:#B0AECA">Yopilish</span>
+                <span style="font-weight:600;color:#3D3B58" x-text="'$' + fmt(kpi.ddsClose)"></span>
               </div>
             </div>
           </div>
           <!-- Debtors -->
-          <div class="kpi-card orange">
-            <div class="text-xs font-semibold text-slate-400 uppercase tracking-wide mb-2">Debitorlik</div>
-            <div class="text-2xl font-bold text-amber-500" x-text="'$' + fmt(kpi.debtors)"></div>
-            <div class="text-xs text-slate-400 mt-1">To'lanmagan zakazlar</div>
+          <div class="kpi-card">
+            <div class="flex items-center mb-3"><span class="kpi-dot warm"></span><span style="font-size:11px;font-weight:500;color:#B0AECA;text-transform:uppercase;letter-spacing:.06em">Debitorlik</span></div>
+            <div class="text-2xl font-semibold" style="color:#C4915A;letter-spacing:-0.02em" x-text="'$' + fmt(kpi.debtors)"></div>
+            <div style="font-size:12px;color:#B0AECA;margin-top:6px">To'lanmagan zakazlar</div>
           </div>
           <!-- Fixed expenses -->
-          <div class="kpi-card red">
-            <div class="text-xs font-semibold text-slate-400 uppercase tracking-wide mb-2">Doimiy xarajatlar</div>
-            <div class="text-2xl font-bold text-red-500" x-text="'$' + fmt(kpi.doimiy)"></div>
-            <div class="text-xs text-slate-400 mt-1">Bu oy</div>
+          <div class="kpi-card">
+            <div class="flex items-center mb-3"><span class="kpi-dot rose"></span><span style="font-size:11px;font-weight:500;color:#B0AECA;text-transform:uppercase;letter-spacing:.06em">Doimiy xarajatlar</span></div>
+            <div class="text-2xl font-semibold" style="color:#C98585;letter-spacing:-0.02em" x-text="'$' + fmt(kpi.doimiy)"></div>
+            <div style="font-size:12px;color:#B0AECA;margin-top:6px">Bu oy</div>
           </div>
         </div>
 
