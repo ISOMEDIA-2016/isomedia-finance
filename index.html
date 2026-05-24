@@ -486,7 +486,129 @@
 
     <!-- Maosh -->
     <div x-show="page === 'maosh'" x-data="maosh()" x-init="init()">
-      <div class="flex justify-center py-16" x-show="loading"><div class="spinner"></div></div>
+      <div class="flex items-center justify-between mb-6">
+        <h1 class="text-2xl font-semibold">Maosh</h1>
+        <button @click="openAdd()" class="btn-primary" x-show="$root.canWrite()">+ Maosh</button>
+      </div>
+
+      <!-- Month navigator -->
+      <div class="flex items-center gap-4 mb-6">
+        <button @click="changeMonth(-1)" class="btn-secondary px-4">←</button>
+        <span class="text-lg font-semibold w-48 text-center" x-text="monthLabel()"></span>
+        <button @click="changeMonth(1)" class="btn-secondary px-4">→</button>
+      </div>
+
+      <!-- Total card -->
+      <div class="card p-5 mb-6 inline-block">
+        <div class="text-xs text-ios-gray mb-1">Oylik jami maosh</div>
+        <div class="text-2xl font-bold" x-text="'$' + fmt(totalJami())"></div>
+      </div>
+
+      <div x-show="error" class="text-ios-red text-sm mb-4" x-text="error"></div>
+      <div x-show="loading" class="flex justify-center py-10"><div class="spinner"></div></div>
+
+      <div class="card overflow-hidden" x-show="!loading">
+        <div class="overflow-x-auto">
+          <table>
+            <thead>
+              <tr>
+                <th>Xodim</th><th>Avans</th><th>Operator ($)</th><th>Arenda ($)</th>
+                <th>Montaj ($)</th><th>PM</th><th>Bonus</th>
+                <th>Jami ($)</th><th>Status</th>
+                <th x-show="$root.canWrite()">Amal</th>
+              </tr>
+            </thead>
+            <tbody>
+              <template x-for="r in records" :key="r._rowId">
+                <tr>
+                  <td class="font-medium" x-text="r.Xodim"></td>
+                  <td x-text="fmt(r.Avans)"></td>
+                  <td x-text="fmt(r.Operator)"></td>
+                  <td x-text="fmt(r.Arenda)"></td>
+                  <td x-text="fmt(r.Montaj)"></td>
+                  <td x-text="fmt(r.PM)"></td>
+                  <td x-text="fmt(r.Bonus)"></td>
+                  <td class="font-bold" x-text="fmt(r.Jami)"></td>
+                  <td>
+                    <span class="badge"
+                          :class="r.Status === 'Tolandi' || r.Status === \"To'landi\" ? 'badge-green' : 'badge-red'"
+                          x-text="r.Status"></span>
+                  </td>
+                  <td x-show="$root.canWrite()">
+                    <button @click="openEdit(r)" class="text-ios-accent text-xs mr-2">Tahrir</button>
+                    <button @click="remove(r)" class="text-ios-red text-xs">O'chir</button>
+                  </td>
+                </tr>
+              </template>
+              <tr x-show="records.length === 0 && !loading">
+                <td colspan="10" class="text-center text-ios-gray py-8">Bu oy uchun ma'lumot yo'q</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Form Modal -->
+      <div x-show="showForm" class="modal-overlay" @click.self="showForm=false">
+        <div class="modal">
+          <h3 class="text-lg font-semibold mb-5" x-text="editRowId ? 'Maoshni tahrirlash' : 'Maosh qo\'shish'"></h3>
+          <div class="grid grid-cols-2 gap-4">
+            <div class="col-span-2">
+              <label class="text-xs text-ios-gray mb-1 block">Xodim *</label>
+              <select x-model="formData.Xodim" class="input-field">
+                <option value="">Tanlang</option>
+                <template x-for="x in xodimlar" :key="x.Nomi">
+                  <option :value="x.Nomi" x-text="x.Nomi"></option>
+                </template>
+              </select>
+            </div>
+            <div>
+              <label class="text-xs text-ios-gray mb-1 block">Avans</label>
+              <input type="number" x-model="formData.Avans" class="input-field"/>
+            </div>
+            <div>
+              <label class="text-xs text-ios-gray mb-1 block">Operator ($)</label>
+              <input type="number" x-model="formData.Operator" @input="calcJami()" class="input-field"/>
+            </div>
+            <div>
+              <label class="text-xs text-ios-gray mb-1 block">Arenda ($)</label>
+              <input type="number" x-model="formData.Arenda" @input="calcJami()" class="input-field"/>
+            </div>
+            <div>
+              <label class="text-xs text-ios-gray mb-1 block">Montaj ($)</label>
+              <input type="number" x-model="formData.Montaj" @input="calcJami()" class="input-field"/>
+            </div>
+            <div>
+              <label class="text-xs text-ios-gray mb-1 block">PM</label>
+              <input type="number" x-model="formData.PM" @input="calcJami()" class="input-field"/>
+            </div>
+            <div>
+              <label class="text-xs text-ios-gray mb-1 block">Bonus</label>
+              <input type="number" x-model="formData.Bonus" @input="calcJami()" class="input-field"/>
+            </div>
+            <div>
+              <label class="text-xs text-ios-gray mb-1 block">Jami ($)</label>
+              <input type="number" x-model="formData.Jami" class="input-field" readonly style="background:#f8f8f8"/>
+            </div>
+            <div>
+              <label class="text-xs text-ios-gray mb-1 block">Status</label>
+              <select x-model="formData.Status" class="input-field">
+                <option>To'lanmadi</option>
+                <option>Tolandi</option>
+              </select>
+            </div>
+            <div class="col-span-2">
+              <label class="text-ios-gray text-xs mb-1 block">Izoh</label>
+              <input x-model="formData.Izoh" class="input-field" placeholder="Izoh..."/>
+            </div>
+          </div>
+          <div x-show="error" class="text-ios-red text-xs mt-3" x-text="error"></div>
+          <div class="flex gap-3 mt-6">
+            <button @click="save()" class="btn-primary flex-1">Saqlash</button>
+            <button @click="showForm=false" class="btn-secondary flex-1">Bekor</button>
+          </div>
+        </div>
+      </div>
     </div>
 
     <!-- Hisobot -->
