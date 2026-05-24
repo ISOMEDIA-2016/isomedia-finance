@@ -112,7 +112,7 @@ function maosh() {
       this.loading = true;
       try {
         await api.remove('Maosh', row._rowId);
-        this.records = this.records.filter(r => r._rowId !== row._rowId);
+        this.records = await api.read('Maosh', { oy: this.currentMonth });
       } catch(e) { this.error = e.message; }
       finally { this.loading = false; }
     },

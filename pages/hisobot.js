@@ -23,6 +23,15 @@ function hisobot() {
       this.$nextTick(() => this.renderCharts());
     },
 
+    toUSD(op) {
+      const amt = Number(op.Summa) || 0;
+      if (op.Valyuta === "So'm") {
+        const kurs = Number(op.Kurs);
+        return kurs > 0 ? amt / kurs : 0;
+      }
+      return amt;
+    },
+
     buildPL(ops) {
       const months = {};
       ops.forEach(op => {
@@ -30,7 +39,7 @@ function hisobot() {
         if (isNaN(d.getTime())) return;
         const key = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0');
         if (!months[key]) months[key] = { kirim: 0, chiqim: 0 };
-        const amt = Number(op.Summa) || 0;
+        const amt = this.toUSD(op);
         if (op.Turi === 'Kirim')  months[key].kirim  += amt;
         if (op.Turi === 'Chiqim') months[key].chiqim += amt;
       });
@@ -53,7 +62,7 @@ function hisobot() {
         if (isNaN(d.getTime())) return;
         const key = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0');
         if (!months[key]) months[key] = { open: balance, kirim: 0, chiqim: 0 };
-        const amt = Number(op.Summa) || 0;
+        const amt = this.toUSD(op);
         if (op.Turi === 'Kirim')  { months[key].kirim  += amt; balance += amt; }
         if (op.Turi === 'Chiqim') { months[key].chiqim += amt; balance -= amt; }
       });
@@ -83,7 +92,7 @@ function hisobot() {
           const key = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0');
           if (!months[key]) months[key] = {};
           const manba = op.Manbalar;
-          months[key][manba] = (months[key][manba] || 0) + (Number(op.Summa) || 0);
+          months[key][manba] = (months[key][manba] || 0) + this.toUSD(op);
         });
       this.doimiyData = Object.entries(months)
         .sort(([a], [b]) => a.localeCompare(b))

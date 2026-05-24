@@ -74,9 +74,14 @@ function readSheet(ws, p) {
     });
   }
 
-  // Filter Maosh by Oy (YYYY-MM string)
+  // Filter Maosh by Oy (YYYY-MM string; handle Sheets auto-parsing Oy as Date)
   if (p.oy) {
-    rows = rows.filter(r => r['Oy'] === p.oy);
+    rows = rows.filter(r => {
+      const val = r['Oy'] instanceof Date
+        ? r['Oy'].getFullYear() + '-' + String(r['Oy'].getMonth() + 1).padStart(2, '0')
+        : String(r['Oy']).slice(0, 7);
+      return val === p.oy;
+    });
   }
 
   return rows.map(r => {

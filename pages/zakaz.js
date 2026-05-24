@@ -155,7 +155,10 @@ function zakaz() {
       this.loading = true;
       try {
         await api.remove('Zakaz', row._rowId);
-        this.orders = this.orders.filter(o => o._rowId !== row._rowId);
+        let orders = await api.read('Zakaz', { month: this.filterMonth });
+        if (this.filterStatus)   orders = orders.filter(o => o.Status === this.filterStatus);
+        if (this.filterYonalish) orders = orders.filter(o => o["Yo'nalish"] === this.filterYonalish);
+        this.orders = orders;
       } catch(e) { this.error = e.message; }
       finally { this.loading = false; }
     },

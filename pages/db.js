@@ -93,7 +93,8 @@ function db() {
       this.loading = true;
       try {
         await api.remove(sheet, row._rowId);
-        this.data[this.activeTab] = this.data[this.activeTab].filter(r => r._rowId !== row._rowId);
+        delete this.data[this.activeTab];
+        await this.loadTab(this.activeTab);
       } catch(e) { this.error = e.message; }
       finally { this.loading = false; }
     }

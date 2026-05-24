@@ -23,30 +23,39 @@ function dashboard() {
       return now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0');
     },
 
+    toUSD(op) {
+      const amt = Number(op.Summa) || 0;
+      if (op.Valyuta === "So'm") {
+        const kurs = Number(op.Kurs);
+        return kurs > 0 ? amt / kurs : 0;
+      }
+      return amt;
+    },
+
     async init() {
       this.loading = true;
       try {
         const month = this.currentMonthKey();
-        const [allKassa, monthKassa, monthZakaz, manbalar, reja] = await Promise.all([
+        const [allKassa, monthKassa, allZakaz, manbalar, reja] = await Promise.all([
           api.read('Kassa'),
           api.read('Kassa', { month }),
-          api.read('Zakaz', { month }),
+          api.read('Zakaz'),
           api.read('DB_Manbalar'),
           api.read('Reja')
         ]);
 
-        // Total balance across all wallets (all time)
+        // Total balance (all time), in USD
         let totalBal = 0;
         allKassa.forEach(op => {
-          const amt = Number(op.Summa) || 0;
+          const amt = this.toUSD(op);
           totalBal += op.Turi === 'Kirim' ? amt : -amt;
         });
         this.kpi.totalBalance = totalBal;
 
-        // Monthly income & expenses
+        // Monthly income & expenses, in USD
         let income = 0, expense = 0;
         monthKassa.forEach(op => {
-          const amt = Number(op.Summa) || 0;
+          const amt = this.toUSD(op);
           if (op.Turi === 'Kirim')  income  += amt;
           if (op.Turi === 'Chiqim') expense += amt;
         });
@@ -54,24 +63,26 @@ function dashboard() {
         this.kpi.monthExpense = expense;
         this.kpi.monthProfit  = income - expense;
 
-        // DDS: opening balance (sum of all ops before this month)
+        // DDS: opening balance = cumulative balance of all ops before this month, in USD
         let openBal = 0;
         allKassa.forEach(op => {
           const d = new Date(op.Sana);
           if (isNaN(d.getTime())) return;
           const opMonth = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0');
           if (opMonth < month) {
-            const amt = Number(op.Summa) || 0;
+            const amt = this.toUSD(op);
             openBal += op.Turi === 'Kirim' ? amt : -amt;
           }
         });
         this.kpi.ddsOpen  = openBal;
         this.kpi.ddsClose = openBal + income - expense;
 
-        // Debtors: sum of Qoldiq from unpaid/partial orders this month
-        this.kpi.debtors = monthZakaz.reduce((s, o) => s + (Number(o.Qoldiq) || 0), 0);
+        // Debtors: ALL unpaid/partial orders across all time (not just current month)
+        this.kpi.debtors = allZakaz
+          .filter(o => o.Status !== "To'landi")
+          .reduce((s, o) => s + (Number(o.Qoldiq) || 0), 0);
 
-        // Doimiy xarajatlar this month
+        // Doimiy xarajatlar this month, in USD
         const doimiyNames = new Set(
           manbalar
             .filter(m => m.Doimiy === 'TRUE' || m.Doimiy === true || m.Doimiy === 'true')
@@ -79,7 +90,7 @@ function dashboard() {
         );
         this.kpi.doimiy = monthKassa
           .filter(op => op.Turi === 'Chiqim' && doimiyNames.has(op.Manbalar))
-          .reduce((s, op) => s + (Number(op.Summa) || 0), 0);
+          .reduce((s, op) => s + this.toUSD(op), 0);
 
         // Monthly plan
         const rejaRow = reja.find(r => r.Oy === month);
@@ -91,22 +102,22 @@ function dashboard() {
           .sort((a, b) => new Date(b.Sana) - new Date(a.Sana))
           .slice(0, 10);
 
-        // Daily income this month for chart
+        // Daily income this month for chart (in USD)
         const dailyMap = {};
         monthKassa
           .filter(op => op.Turi === 'Kirim' && op.Sana)
           .forEach(op => {
-            dailyMap[op.Sana] = (dailyMap[op.Sana] || 0) + (Number(op.Summa) || 0);
+            dailyMap[op.Sana] = (dailyMap[op.Sana] || 0) + this.toUSD(op);
           });
         this.dailyData = Object.entries(dailyMap).sort(([a], [b]) => a.localeCompare(b));
 
-        // Top 5 expense categories this month
+        // Top 5 expense categories this month (in USD)
         const expMap = {};
         monthKassa
           .filter(op => op.Turi === 'Chiqim')
           .forEach(op => {
             const cat = op.Manbalar || 'Boshqa';
-            expMap[cat] = (expMap[cat] || 0) + (Number(op.Summa) || 0);
+            expMap[cat] = (expMap[cat] || 0) + this.toUSD(op);
           });
         this.expenseData = Object.entries(expMap)
           .sort(([, a], [, b]) => b - a)

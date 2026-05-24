@@ -233,7 +233,8 @@
     </div>
 
     <!-- Kassa -->
-    <div x-show="page === 'kassa'" x-data="kassa()" x-init="init()">
+    <template x-if="page === 'kassa'">
+    <div x-data="kassa()" x-init="init()">
       <div class="flex items-center justify-between mb-6">
         <h1 class="text-2xl font-semibold">Kassa</h1>
         <div class="flex gap-2" x-show="$root.canWrite()">
@@ -406,9 +407,11 @@
         </div>
       </div>
     </div>
+    </template>
 
     <!-- Zakaz -->
-    <div x-show="page === 'zakaz'" x-data="zakaz()" x-init="init()">
+    <template x-if="page === 'zakaz'">
+    <div x-data="zakaz()" x-init="init()">
       <div class="flex items-center justify-between mb-6">
         <h1 class="text-2xl font-semibold">Zakaz</h1>
         <button @click="openAdd()" class="btn-primary" x-show="$root.canWrite()">+ Zakaz</button>
@@ -598,9 +601,11 @@
         </div>
       </div>
     </div>
+    </template>
 
     <!-- Maosh -->
-    <div x-show="page === 'maosh'" x-data="maosh()" x-init="init()">
+    <template x-if="page === 'maosh'">
+    <div x-data="maosh()" x-init="init()">
       <div class="flex items-center justify-between mb-6">
         <h1 class="text-2xl font-semibold">Maosh</h1>
         <button @click="openAdd()" class="btn-primary" x-show="$root.canWrite()">+ Maosh</button>
@@ -646,7 +651,7 @@
                   <td class="font-bold" x-text="fmt(r.Jami)"></td>
                   <td>
                     <span class="badge"
-                          :class="r.Status === 'Tolandi' || r.Status === \"To'landi\" ? 'badge-green' : 'badge-red'"
+                          :class="r.Status === \"To'landi\" ? 'badge-green' : 'badge-red'"
                           x-text="r.Status"></span>
                   </td>
                   <td x-show="$root.canWrite()">
@@ -709,7 +714,7 @@
               <label class="text-xs text-ios-gray mb-1 block">Status</label>
               <select x-model="formData.Status" class="input-field">
                 <option>To'lanmadi</option>
-                <option>Tolandi</option>
+                <option>To'landi</option>
               </select>
             </div>
             <div class="col-span-2">
@@ -725,9 +730,11 @@
         </div>
       </div>
     </div>
+    </template>
 
     <!-- Hisobot -->
-    <div x-show="page === 'hisobot'" x-data="hisobot()" x-init="init()">
+    <template x-if="page === 'hisobot'">
+    <div x-data="hisobot()" x-init="init()">
       <div class="flex items-center justify-between mb-6">
         <h1 class="text-2xl font-semibold">Hisobot</h1>
       </div>
@@ -826,9 +833,11 @@
         </div>
       </div>
     </div>
+    </template>
 
     <!-- Ma'lumotnoma -->
-    <div x-show="page === 'db'" x-data="db()" x-init="init()">
+    <template x-if="page === 'db'">
+    <div x-data="db()" x-init="init()">
       <div class="flex items-center justify-between mb-6">
         <h1 class="text-2xl font-semibold">Ma'lumotnoma</h1>
         <button @click="openAdd()" class="btn-primary" x-show="$root.canWrite()">+ Qo'shish</button>
@@ -899,6 +908,7 @@
         </div>
       </div>
     </div>
+    </template>
 
   </main>
 </div>
