@@ -613,7 +613,103 @@
 
     <!-- Hisobot -->
     <div x-show="page === 'hisobot'" x-data="hisobot()" x-init="init()">
-      <div class="flex justify-center py-16" x-show="loading"><div class="spinner"></div></div>
+      <div class="flex items-center justify-between mb-6">
+        <h1 class="text-2xl font-semibold">Hisobot</h1>
+      </div>
+
+      <div class="flex gap-2 mb-6">
+        <button class="tab-btn" :class="{active: activeTab==='pl'}"     @click="setTab('pl')">P&amp;L</button>
+        <button class="tab-btn" :class="{active: activeTab==='dds'}"    @click="setTab('dds')">DDS</button>
+        <button class="tab-btn" :class="{active: activeTab==='doimiy'}" @click="setTab('doimiy')">Doimiy xarajatlar</button>
+      </div>
+
+      <div x-show="error" class="text-ios-red text-sm mb-4" x-text="error"></div>
+      <div x-show="loading" class="flex justify-center py-10"><div class="spinner"></div></div>
+
+      <!-- P&L Tab -->
+      <div x-show="activeTab === 'pl' && !loading" x-cloak>
+        <div class="card p-4 mb-6"><canvas id="plChart" height="100"></canvas></div>
+        <div class="card overflow-hidden">
+          <div class="overflow-x-auto">
+            <table>
+              <thead><tr><th>Oy</th><th>Kirim</th><th>Chiqim</th><th>Foyda</th></tr></thead>
+              <tbody>
+                <template x-for="r in plData" :key="r.oy">
+                  <tr>
+                    <td x-text="fmtMonth(r.oy)"></td>
+                    <td class="text-ios-green font-medium" x-text="fmt(r.kirim)"></td>
+                    <td class="text-ios-red font-medium" x-text="fmt(r.chiqim)"></td>
+                    <td class="font-bold" :class="r.foyda >= 0 ? 'text-ios-green' : 'text-ios-red'" x-text="fmt(r.foyda)"></td>
+                  </tr>
+                </template>
+                <tr x-show="plData.length === 0 && !loading">
+                  <td colspan="4" class="text-center text-ios-gray py-8">Ma'lumot yo'q</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- DDS Tab -->
+      <div x-show="activeTab === 'dds' && !loading" x-cloak>
+        <div class="card overflow-hidden">
+          <div class="overflow-x-auto">
+            <table>
+              <thead>
+                <tr>
+                  <th>Oy</th><th>Ochilish qoldiq</th><th>Kirim</th><th>Chiqim</th><th>Yopilish qoldiq</th>
+                </tr>
+              </thead>
+              <tbody>
+                <template x-for="r in ddsData" :key="r.oy">
+                  <tr>
+                    <td x-text="fmtMonth(r.oy)"></td>
+                    <td x-text="fmt(r.open)"></td>
+                    <td class="text-ios-green" x-text="fmt(r.kirim)"></td>
+                    <td class="text-ios-red" x-text="fmt(r.chiqim)"></td>
+                    <td class="font-bold" :class="r.close >= 0 ? '' : 'text-ios-red'" x-text="fmt(r.close)"></td>
+                  </tr>
+                </template>
+                <tr x-show="ddsData.length === 0 && !loading">
+                  <td colspan="5" class="text-center text-ios-gray py-8">Ma'lumot yo'q</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Doimiy xarajatlar Tab -->
+      <div x-show="activeTab === 'doimiy' && !loading" x-cloak>
+        <div class="card overflow-hidden">
+          <div class="overflow-x-auto">
+            <table>
+              <thead>
+                <tr>
+                  <th>Oy</th>
+                  <template x-for="cat in doimiyCategories()" :key="cat"><th x-text="cat"></th></template>
+                  <th>Jami</th>
+                </tr>
+              </thead>
+              <tbody>
+                <template x-for="r in doimiyData" :key="r.oy">
+                  <tr>
+                    <td x-text="fmtMonth(r.oy)"></td>
+                    <template x-for="cat in doimiyCategories()" :key="cat">
+                      <td x-text="fmt(r[cat] || 0)"></td>
+                    </template>
+                    <td class="font-bold" x-text="fmt(r.total)"></td>
+                  </tr>
+                </template>
+                <tr x-show="doimiyData.length === 0 && !loading">
+                  <td colspan="10" class="text-center text-ios-gray py-8">Doimiy xarajatlar topilmadi</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
     </div>
 
     <!-- Ma'lumotnoma -->
