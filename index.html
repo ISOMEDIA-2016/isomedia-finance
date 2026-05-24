@@ -30,53 +30,93 @@
     }
   </script>
   <style>
-    body { font-family: 'Inter', sans-serif; background: #F2F2F7; color: #1C1C1E; }
-    .card { background: #fff; border-radius: 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
-    .sidebar-link { display:flex; align-items:center; gap:10px; padding:10px 16px; border-radius:10px; cursor:pointer; transition:background .15s; font-size:14px; font-weight:500; color:#1C1C1E; }
-    .sidebar-link:hover { background:#F2F2F7; }
-    .sidebar-link.active { background:#EEF0FF; color:#5856D6; }
-    .btn-primary { background:#5856D6; color:#fff; padding:8px 20px; border-radius:10px; font-size:14px; font-weight:500; cursor:pointer; border:none; transition:opacity .15s; }
-    .btn-primary:hover { opacity:0.9; }
-    .btn-secondary { background:#F2F2F7; color:#1C1C1E; padding:8px 20px; border-radius:10px; font-size:14px; font-weight:500; cursor:pointer; border:none; }
-    .btn-danger { background:#FF3B30; color:#fff; padding:6px 14px; border-radius:8px; font-size:13px; cursor:pointer; border:none; }
-    .input-field { width:100%; border:1.5px solid #E5E5EA; border-radius:10px; padding:9px 12px; font-size:14px; outline:none; transition:border-color .15s; font-family:'Inter',sans-serif; }
-    .input-field:focus { border-color:#5856D6; }
-    .tab-btn { padding:8px 18px; border-radius:8px; font-size:13px; font-weight:500; cursor:pointer; border:none; background:transparent; color:#8E8E93; transition:all .15s; }
-    .tab-btn.active { background:#5856D6; color:#fff; }
+    * { box-sizing: border-box; }
+    body { font-family: 'Inter', sans-serif; background: #F1F5F9; color: #0F172A; }
+
+    /* ── Sidebar ── */
+    .sidebar { background: #0F172A; }
+    .sidebar-link { display:flex; align-items:center; gap:10px; padding:9px 14px; border-radius:10px; cursor:pointer; transition:all .15s; font-size:13.5px; font-weight:500; color:#64748B; }
+    .sidebar-link svg { flex-shrink:0; }
+    .sidebar-link:hover { background:rgba(255,255,255,0.06); color:#CBD5E1; }
+    .sidebar-link.active { background:rgba(99,102,241,0.18); color:#A5B4FC; }
+    .sidebar-link.active svg { color:#818CF8; }
+
+    /* ── Cards ── */
+    .card { background:#fff; border-radius:16px; box-shadow:0 1px 2px rgba(0,0,0,0.04), 0 4px 20px rgba(0,0,0,0.06); }
+    .kpi-card { background:#fff; border-radius:16px; box-shadow:0 1px 2px rgba(0,0,0,0.04), 0 4px 20px rgba(0,0,0,0.06); padding:20px; position:relative; overflow:hidden; }
+    .kpi-card::before { content:''; position:absolute; top:0; left:0; right:0; height:3px; }
+    .kpi-card.accent::before { background: linear-gradient(90deg,#6366F1,#8B5CF6); }
+    .kpi-card.green::before  { background: linear-gradient(90deg,#22C55E,#16A34A); }
+    .kpi-card.blue::before   { background: linear-gradient(90deg,#3B82F6,#6366F1); }
+    .kpi-card.orange::before { background: linear-gradient(90deg,#F59E0B,#EF4444); }
+    .kpi-card.red::before    { background: linear-gradient(90deg,#EF4444,#F43F5E); }
+    .kpi-card.slate::before  { background: linear-gradient(90deg,#64748B,#475569); }
+
+    /* ── Buttons ── */
+    .btn-primary { background:#5856D6; color:#fff; padding:8px 18px; border-radius:10px; font-size:13.5px; font-weight:500; cursor:pointer; border:none; transition:all .15s; box-shadow:0 1px 3px rgba(88,86,214,0.35); }
+    .btn-primary:hover { background:#4845C0; }
+    .btn-secondary { background:#F1F5F9; color:#475569; padding:8px 18px; border-radius:10px; font-size:13.5px; font-weight:500; cursor:pointer; border:1.5px solid #E2E8F0; transition:all .15s; }
+    .btn-secondary:hover { background:#E2E8F0; }
+    .btn-danger { background:#EF4444; color:#fff; padding:6px 14px; border-radius:8px; font-size:13px; cursor:pointer; border:none; }
+
+    /* ── Inputs ── */
+    .input-field { width:100%; border:1.5px solid #E2E8F0; border-radius:10px; padding:9px 12px; font-size:14px; outline:none; transition:border-color .15s; font-family:'Inter',sans-serif; background:#fff; color:#0F172A; }
+    .input-field:focus { border-color:#6366F1; box-shadow:0 0 0 3px rgba(99,102,241,0.1); }
+
+    /* ── Tabs ── */
+    .tab-btn { padding:7px 16px; border-radius:8px; font-size:13px; font-weight:500; cursor:pointer; border:none; background:transparent; color:#94A3B8; transition:all .15s; }
+    .tab-btn:hover { color:#475569; background:#F1F5F9; }
+    .tab-btn.active { background:#5856D6; color:#fff; box-shadow:0 1px 4px rgba(88,86,214,0.35); }
+
+    /* ── Tables ── */
     table { width:100%; border-collapse:collapse; font-size:13px; }
-    th { text-align:left; padding:10px 12px; color:#8E8E93; font-weight:500; border-bottom:1px solid #F2F2F7; font-size:12px; }
-    td { padding:10px 12px; border-bottom:1px solid #F2F2F7; }
-    tr:hover td { background:#FAFAFA; }
-    .badge { display:inline-block; padding:3px 10px; border-radius:20px; font-size:11px; font-weight:600; }
-    .badge-green { background:#E8FAF0; color:#34C759; }
-    .badge-red { background:#FEF0EF; color:#FF3B30; }
-    .badge-orange { background:#FFF4E6; color:#FF9500; }
-    .modal-overlay { position:fixed; inset:0; background:rgba(0,0,0,0.3); z-index:50; display:flex; align-items:center; justify-content:center; }
-    .modal { background:#fff; border-radius:20px; padding:28px; width:100%; max-width:520px; max-height:90vh; overflow-y:auto; }
-    .spinner { border:3px solid #E5E5EA; border-top-color:#5856D6; border-radius:50%; width:24px; height:24px; animation:spin .7s linear infinite; }
+    th { text-align:left; padding:10px 14px; color:#94A3B8; font-weight:600; font-size:11px; text-transform:uppercase; letter-spacing:0.05em; border-bottom:1.5px solid #F1F5F9; }
+    td { padding:11px 14px; border-bottom:1px solid #F8FAFC; color:#334155; }
+    tr:last-child td { border-bottom:none; }
+    tr:hover td { background:#F8FAFC; }
+
+    /* ── Badges ── */
+    .badge { display:inline-flex; align-items:center; padding:3px 10px; border-radius:20px; font-size:11px; font-weight:600; letter-spacing:0.02em; }
+    .badge-green  { background:#DCFCE7; color:#16A34A; }
+    .badge-red    { background:#FEE2E2; color:#DC2626; }
+    .badge-orange { background:#FEF3C7; color:#D97706; }
+    .badge-blue   { background:#DBEAFE; color:#2563EB; }
+
+    /* ── Modal ── */
+    .modal-overlay { position:fixed; inset:0; background:rgba(15,23,42,0.5); backdrop-filter:blur(4px); z-index:50; display:flex; align-items:center; justify-content:center; padding:16px; }
+    .modal { background:#fff; border-radius:20px; padding:28px; width:100%; max-width:540px; max-height:90vh; overflow-y:auto; box-shadow:0 20px 60px rgba(0,0,0,0.2); }
+
+    /* ── Spinner ── */
+    .spinner { border:2.5px solid #E2E8F0; border-top-color:#5856D6; border-radius:50%; width:24px; height:24px; animation:spin .7s linear infinite; }
     @keyframes spin { to { transform:rotate(360deg); } }
+
+    /* ── Login ── */
+    .login-bg { background: linear-gradient(135deg, #0F172A 0%, #1E293B 60%, #1E1B4B 100%); }
+    .login-card { background:rgba(255,255,255,0.97); backdrop-filter:blur(20px); border-radius:24px; box-shadow:0 25px 60px rgba(0,0,0,0.35); }
+
     [x-cloak] { display: none !important; }
   </style>
 </head>
 <body>
 
 <!-- ==================== LOGIN ==================== -->
-<div x-show="!user" class="min-h-screen flex items-center justify-center p-4">
-  <div class="card p-10 w-full max-w-sm">
+<div x-show="!user" class="login-bg min-h-screen flex items-center justify-center p-4">
+  <div class="login-card p-10 w-full max-w-sm">
     <div class="flex justify-center mb-8">
-      <img src="assets/isomedia_black.png" alt="ISOMEDIA" class="h-8 object-contain"/>
+      <img src="assets/isomedia_black.png" alt="ISOMEDIA" class="h-9 object-contain"/>
     </div>
+    <p class="text-center text-sm text-slate-400 mb-6 -mt-4">Moliyaviy boshqaruv tizimi</p>
     <form @submit.prevent="login()" class="space-y-4">
       <div>
-        <label class="block text-xs font-medium text-ios-gray mb-1">Foydalanuvchi nomi</label>
+        <label class="block text-xs font-semibold text-slate-500 mb-1.5 uppercase tracking-wide">Foydalanuvchi</label>
         <input x-model="loginForm.username" type="text" class="input-field" placeholder="username" required/>
       </div>
       <div>
-        <label class="block text-xs font-medium text-ios-gray mb-1">Parol</label>
+        <label class="block text-xs font-semibold text-slate-500 mb-1.5 uppercase tracking-wide">Parol</label>
         <input x-model="loginForm.password" type="password" class="input-field" placeholder="••••••••" required/>
       </div>
-      <div x-show="loginError" class="text-sm text-ios-red" x-text="loginError"></div>
-      <button type="submit" class="btn-primary w-full mt-2">Kirish</button>
+      <div x-show="loginError" class="text-sm text-red-500 bg-red-50 rounded-lg px-3 py-2" x-text="loginError"></div>
+      <button type="submit" class="btn-primary w-full mt-2 py-3 text-sm">Kirish →</button>
     </form>
   </div>
 </div>
@@ -85,9 +125,9 @@
 <div x-show="user" class="flex min-h-screen">
 
   <!-- Sidebar -->
-  <aside class="w-60 bg-white flex flex-col py-6 px-4 gap-1 shadow-sm flex-shrink-0">
-    <div class="px-3 mb-6">
-      <img src="assets/isomedia_black.png" alt="ISOMEDIA" class="h-7 object-contain"/>
+  <aside class="sidebar w-60 flex flex-col py-5 px-3 gap-1 flex-shrink-0">
+    <div class="px-3 mb-5 pb-5" style="border-bottom:1px solid rgba(255,255,255,0.07)">
+      <img src="assets/isomedia_white.png" alt="ISOMEDIA" class="h-7 object-contain"/>
     </div>
 
     <template x-for="item in navItems()" :key="item.id">
@@ -95,22 +135,30 @@
         class="sidebar-link"
         :class="{ active: page === item.id }"
         @click="navigate(item.id)">
-        <span class="text-base" x-text="navIcon(item.icon)"></span>
+        <span x-html="navIcon(item.icon)"></span>
         <span x-text="item.label"></span>
       </div>
     </template>
 
     <div class="flex-1"></div>
 
-    <div class="px-3 py-3 rounded-xl bg-ios-bg">
-      <div class="text-xs font-medium text-ios-dark" x-text="user && user.username"></div>
-      <div class="text-xs text-ios-gray capitalize" x-text="user && user.role"></div>
-      <button @click="logout()" class="text-xs text-ios-red mt-2 font-medium">Chiqish</button>
+    <div class="mx-1 p-3 rounded-xl" style="background:rgba(255,255,255,0.06)">
+      <div class="flex items-center gap-2 mb-2">
+        <div class="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold text-white" style="background:#5856D6" x-text="user && user.username[0].toUpperCase()"></div>
+        <div>
+          <div class="text-xs font-semibold text-slate-200" x-text="user && user.username"></div>
+          <div class="text-xs capitalize" style="color:#64748B" x-text="user && user.role"></div>
+        </div>
+      </div>
+      <button @click="logout()" class="text-xs font-medium w-full text-left mt-1 flex items-center gap-1.5" style="color:#EF4444">
+        <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0 0 13.5 3h-6a2.25 2.25 0 0 0-2.25 2.25v13.5A2.25 2.25 0 0 0 7.5 21h6a2.25 2.25 0 0 0 2.25-2.25V15M12 9l-3 3m0 0 3 3m-3-3h12.75"/></svg>
+        Chiqish
+      </button>
     </div>
   </aside>
 
   <!-- Main Content -->
-  <main class="flex-1 overflow-auto p-6">
+  <main class="flex-1 overflow-auto p-6 bg-slate-50">
 
     <!-- Dashboard -->
     <div x-show="page === 'dashboard'" x-data="dashboard()" x-init="init()">
@@ -127,51 +175,58 @@
         <!-- KPI Cards -->
         <div class="grid grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
           <!-- Total balance -->
-          <div class="card p-5">
-            <div class="text-xs text-ios-gray mb-1">Umumiy qoldiq</div>
+          <div class="kpi-card accent">
+            <div class="text-xs font-semibold text-slate-400 uppercase tracking-wide mb-2">Umumiy qoldiq</div>
             <div class="text-2xl font-bold"
-                 :class="kpi.totalBalance >= 0 ? '' : 'text-ios-red'"
-                 x-text="fmt(kpi.totalBalance)"></div>
+                 :class="kpi.totalBalance >= 0 ? 'text-slate-800' : 'text-red-500'"
+                 x-text="'$' + fmt(kpi.totalBalance)"></div>
+            <div class="text-xs text-slate-400 mt-1">Barcha hamyonlar</div>
           </div>
           <!-- Monthly income vs plan -->
-          <div class="card p-5">
-            <div class="text-xs text-ios-gray mb-1">Oylik daromad</div>
-            <div class="text-2xl font-bold text-ios-green" x-text="fmt(kpi.monthIncome)"></div>
-            <div class="text-xs text-ios-gray mt-1" x-show="kpi.monthPlan > 0">
-              Plan: <span x-text="fmt(kpi.monthPlan)"></span>
-              <span class="ml-1 font-semibold"
-                    :class="planPercent() >= 100 ? 'text-ios-green' : 'text-ios-orange'"
+          <div class="kpi-card green">
+            <div class="text-xs font-semibold text-slate-400 uppercase tracking-wide mb-2">Oylik daromad</div>
+            <div class="text-2xl font-bold text-emerald-600" x-text="'$' + fmt(kpi.monthIncome)"></div>
+            <div class="text-xs text-slate-400 mt-1" x-show="kpi.monthPlan > 0">
+              Plan: <span class="font-medium text-slate-600" x-text="'$' + fmt(kpi.monthPlan)"></span>
+              <span class="ml-1 font-bold"
+                    :class="planPercent() >= 100 ? 'text-emerald-500' : 'text-amber-500'"
                     x-text="planPercent() + '%'"></span>
             </div>
+            <div class="text-xs text-slate-400 mt-1" x-show="!kpi.monthPlan">Bu oy</div>
           </div>
           <!-- Profit -->
-          <div class="card p-5">
-            <div class="text-xs text-ios-gray mb-1">Oylik foyda</div>
+          <div class="kpi-card blue">
+            <div class="text-xs font-semibold text-slate-400 uppercase tracking-wide mb-2">Oylik foyda</div>
             <div class="text-2xl font-bold"
-                 :class="kpi.monthProfit >= 0 ? 'text-ios-green' : 'text-ios-red'"
-                 x-text="fmt(kpi.monthProfit)"></div>
+                 :class="kpi.monthProfit >= 0 ? 'text-blue-600' : 'text-red-500'"
+                 x-text="'$' + fmt(kpi.monthProfit)"></div>
+            <div class="text-xs text-slate-400 mt-1">Daromad − xarajat</div>
           </div>
           <!-- DDS -->
-          <div class="card p-5">
-            <div class="text-xs text-ios-gray mb-2">DDS (joriy oy)</div>
-            <div class="text-sm text-ios-gray">
-              Ochilish: <span class="font-medium text-ios-dark" x-text="fmt(kpi.ddsOpen)"></span>
-            </div>
-            <div class="text-sm text-ios-gray mt-1">
-              Yopilish: <span class="font-bold text-ios-dark" x-text="fmt(kpi.ddsClose)"></span>
+          <div class="kpi-card slate">
+            <div class="text-xs font-semibold text-slate-400 uppercase tracking-wide mb-2">DDS (joriy oy)</div>
+            <div class="flex flex-col gap-1 mt-1">
+              <div class="flex justify-between text-sm">
+                <span class="text-slate-400">Ochilish</span>
+                <span class="font-semibold text-slate-700" x-text="'$' + fmt(kpi.ddsOpen)"></span>
+              </div>
+              <div class="flex justify-between text-sm">
+                <span class="text-slate-400">Yopilish</span>
+                <span class="font-bold text-slate-800" x-text="'$' + fmt(kpi.ddsClose)"></span>
+              </div>
             </div>
           </div>
           <!-- Debtors -->
-          <div class="card p-5">
-            <div class="text-xs text-ios-gray mb-1">Debitorlik</div>
-            <div class="text-2xl font-bold text-ios-orange" x-text="'$' + fmt(kpi.debtors)"></div>
-            <div class="text-xs text-ios-gray mt-1">To'lanmagan zakazlar</div>
+          <div class="kpi-card orange">
+            <div class="text-xs font-semibold text-slate-400 uppercase tracking-wide mb-2">Debitorlik</div>
+            <div class="text-2xl font-bold text-amber-500" x-text="'$' + fmt(kpi.debtors)"></div>
+            <div class="text-xs text-slate-400 mt-1">To'lanmagan zakazlar</div>
           </div>
           <!-- Fixed expenses -->
-          <div class="card p-5">
-            <div class="text-xs text-ios-gray mb-1">Doimiy xarajatlar</div>
-            <div class="text-2xl font-bold text-ios-red" x-text="fmt(kpi.doimiy)"></div>
-            <div class="text-xs text-ios-gray mt-1">Bu oy</div>
+          <div class="kpi-card red">
+            <div class="text-xs font-semibold text-slate-400 uppercase tracking-wide mb-2">Doimiy xarajatlar</div>
+            <div class="text-2xl font-bold text-red-500" x-text="'$' + fmt(kpi.doimiy)"></div>
+            <div class="text-xs text-slate-400 mt-1">Bu oy</div>
           </div>
         </div>
 
@@ -925,9 +980,14 @@
 <script src="app.js"></script>
 <script>
   function navIcon(name) {
+    const s = 'width="17" height="17" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.75"';
     const icons = {
-      home: '🏠', wallet: '💳', list: '📋',
-      users: '👥', chart: '📊', db: '🗂️'
+      home:   `<svg ${s}><path stroke-linecap="round" stroke-linejoin="round" d="m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25"/></svg>`,
+      wallet: `<svg ${s}><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18.75a60.07 60.07 0 0 1 15.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 0 1 3 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 0 0-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 0 1-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 0 0 3 15h-.75M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/></svg>`,
+      list:   `<svg ${s}><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 0 0 2.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 0 0-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 0 0 .75-.75 2.25 2.25 0 0 0-.1-.664m-5.8 0A2.251 2.251 0 0 1 13.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m0 0H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V9.375c0-.621-.504-1.125-1.125-1.125H8.25Z"/></svg>`,
+      users:  `<svg ${s}><path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-.952 4.125 4.125 0 0 0-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 0 1 8.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0 1 11.964-3.07M12 6.375a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0Zm8.25 2.25a2.625 2.625 0 1 1-5.25 0 2.625 2.625 0 0 1 5.25 0Z"/></svg>`,
+      chart:  `<svg ${s}><path stroke-linecap="round" stroke-linejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 0 1 3 19.875v-6.75ZM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V8.625ZM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V4.125Z"/></svg>`,
+      db:     `<svg ${s}><path stroke-linecap="round" stroke-linejoin="round" d="M20.25 6.375c0 2.278-3.694 4.125-8.25 4.125S3.75 8.653 3.75 6.375m16.5 0c0-2.278-3.694-4.125-8.25-4.125S3.75 4.097 3.75 6.375m16.5 0v11.25c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125V6.375m16.5 5.625c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125"/></svg>`
     };
     return icons[name] || '•';
   }
